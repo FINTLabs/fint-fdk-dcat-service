@@ -23,7 +23,7 @@ spec:
       restartPolicy: Always
       containers:
         - name: fdk-dcat
-          image: fintlabs.azurecr.io/fdk-dcat-service:RC-4
+          image: fintlabs.azurecr.io/fdk-dcat-service:RC-5
           ports:
             - containerPort: 8080
           env:
