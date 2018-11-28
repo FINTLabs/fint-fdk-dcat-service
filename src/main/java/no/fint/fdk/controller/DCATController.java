@@ -91,15 +91,12 @@ public class DCATController {
         List<Model> datasetModels = getDatasetModels(orgNum);
 
 
-
         if (organisationModel.isPresent() && catalogModel.isPresent()) {
             OrganisationDataCatalogBuilder.OrganisationDataCatalogModelBuilder catalog = OrganisationDataCatalogBuilder.builder().dataCatalog()
                     .organisation(organisationModel.get())
                     .catalog(catalogModel.get());
 
-            datasetModels.forEach(ds -> {
-                catalog.dataset(ds);
-            });
+            datasetModels.forEach(catalog::dataset);
             return Optional.of(catalog.build());
         }
 
@@ -111,10 +108,10 @@ public class DCATController {
 
         Optional<Organisation> organisation = organisations.stream().filter(o -> o.getOrgNumber().equals(orgNum)).findFirst();
 
-        return Optional.ofNullable(
-                OrganisationBuilder.builder()
-                        .organisation(organisation.get().getOrgNumber(), organisation.get().getDisplayName())
-                        .build());
+        return organisation.map(organisation1 -> OrganisationBuilder.builder()
+                .organisation(organisation1.getOrgNumber(), organisation1.getDisplayName())
+                .build());
+
     }
 
     private Optional<Model> getCatalogModel(String orgNum) {
@@ -122,9 +119,8 @@ public class DCATController {
 
         Optional<Organisation> organisation = organisations.stream().filter(o -> o.getOrgNumber().equals(orgNum)).findFirst();
 
-        return Optional.ofNullable(
-                CatalogBuilder.builder()
-                        .organisation(organisation.get().getOrgNumber(), organisation.get().getDisplayName()).build());
+        return organisation.map(o -> CatalogBuilder.builder()
+                .organisation(o.getOrgNumber(), o.getDisplayName()).build());
     }
 
     private Optional<Organisation> getOrganisation(String orgNum) {
@@ -137,23 +133,21 @@ public class DCATController {
         Optional<Organisation> organisation = getOrganisation(orgNum);
         List<Model> datasets = new ArrayList<>();
 
-        if (organisation.isPresent()) {
-            organisation.get().getComponents().forEach(componentDn -> {
-                Optional<Component> component = componentService.getComponetByDn(componentDn);
-                if (component.isPresent()) {
-                    Component c = component.get();
-                    datasets.add(DatasetBuilder.builder()
-                            .organisation(orgNum, c.getName())
-                            .title(c.getDescription())
-                            .description(c.getDescription())
-                            .type("Data")
-                            .theme(EuMetadataRegistry.DataTheme.GOVE)
-                            .accrualPeriodicity(EuMetadataRegistry.Frequency.CONT)
-                            .spatial("https://data.geonorge.no/administrativeEnheter/fylke/doc/173152")
-                            .build());
-                }
-            });
-        }
+        organisation.ifPresent(o -> o.getComponents().forEach(componentDn -> {
+            Optional<Component> component = componentService.getComponetByDn(componentDn);
+            if (component.isPresent()) {
+                Component c = component.get();
+                datasets.add(DatasetBuilder.builder()
+                        .organisation(orgNum, c.getName())
+                        .title(c.getDescription())
+                        .description(c.getDescription())
+                        .type("Data")
+                        .theme(EuMetadataRegistry.DataTheme.GOVE)
+                        .accrualPeriodicity(EuMetadataRegistry.Frequency.CONT)
+                        .spatial("https://data.geonorge.no/administrativeEnheter/fylke/doc/173152")
+                        .build());
+            }
+        }));
         return datasets;
     }
 
