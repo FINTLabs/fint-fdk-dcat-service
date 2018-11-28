@@ -79,11 +79,10 @@ build.dependsOn(copyExternalDependencies)
 build.dependsOn(copyFintDependencies)
 
 jar {
-    baseName = 'fint-provider'
     manifest {
         attributes(
                 "Manifest-Version": "1.0",
-                "Main-Class": "no.fint.provider.events.Application",
+                "Main-Class": "no.fint.Application",
                 "Specification-Version": "${version}",
                 "Implementation-Version": "${version}",
                 "Class-Path": configurations.runtime.collect { it.getName() }.join(' ')
