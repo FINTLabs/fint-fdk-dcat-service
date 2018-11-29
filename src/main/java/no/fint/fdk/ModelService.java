@@ -88,7 +88,7 @@ public class ModelService {
                         .type("Data")
                         .theme(EuMetadataRegistry.DataTheme.GOVE)
                         .accrualPeriodicity(EuMetadataRegistry.Frequency.CONT)
-                        .spatial("https://data.geonorge.no/administrativeEnheter/fylke/doc/173152")
+                        .spatial("https://data.geonorge.no/administrativeEnheter/fylke/id/173152")
                         .build());
             }
         });
