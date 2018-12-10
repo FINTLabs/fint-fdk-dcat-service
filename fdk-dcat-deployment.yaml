@@ -10,6 +10,7 @@ spec:
       io.kompose.service: fdk-dcat
   replicas: 1
   minReadySeconds: 10
+  revisionHistoryLimit: 0
   strategy:
     type: RollingUpdate
     rollingUpdate:
@@ -26,6 +27,14 @@ spec:
           image: fintlabs.azurecr.io/fdk-dcat-service:RC-8
           ports:
             - containerPort: 8080
+          readinessProbe:
+            httpGet:
+              port: 8080
+              path: /
+          resources:
+            limits:
+              cpu: "128Mi"
+              memory: "500m"
           env:
             - name: TZ
               value: Europe/Oslo
